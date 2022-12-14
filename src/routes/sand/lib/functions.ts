@@ -5,28 +5,31 @@ export function fillDoubleArray(height: number, width: number) {
 }
 
 /**
- * Returns the 3 neighbors of (i,j) (bottom, bottom-left, bottom-right)
+ * Returns the 5 neighbors of (i,j) (left, bottom-left, bottom, bottom-right, right)
  * @param i
  * @param j
  * @param array
  */
 function getNeighbors(i: number, j: number, array: boolean[][]): boolean[] {
-	if (i === array.length - 1) return [false, false, false]
-	if (j === 0) return [array[i + 1][j], true, array[i + 1][j + 1]]
-	if (j === array[0].length - 1) return [array[i + 1][j], array[i + 1][j - 1], true]
-	return [array[i + 1][j], array[i + 1][j - 1], array[i + 1][j + 1]]
+	if (i === array.length - 1) return [false, false, false, false, false]
+	if (j === 0) return [true, true, array[i + 1][j], array[i + 1][j + 1], array[i][j + 1]]
+	if (j === array[0].length - 1)
+		return [array[i][j - 1], array[i + 1][j - 1], array[i + 1][j], true, true]
+	return [
+		array[i][j - 1],
+		array[i + 1][j - 1],
+		array[i + 1][j],
+		array[i + 1][j + 1],
+		array[i][j + 1],
+	]
 }
 
-/**
- * Returns the immediate left and right neighbors of (i,j)
- * @param i
- * @param j
- * @param array
- */
-function getLeftRight(i: number, j: number, array: boolean[][]): boolean[] {
-	if (j === 0) return [true, array[i][j + 1]]
-	if (j === array[0].length - 1) return [array[i][j - 1], true]
-	return [array[i][j - 1], array[i][j + 1]]
+function arrayOr(array1: boolean[], array2: boolean[]): boolean[] {
+	const or = []
+	for (let i = 0; i < array1.length; i++) {
+		or.push(array1[i] || array2[i])
+	}
+	return or
 }
 
 /**
@@ -37,22 +40,12 @@ function getLeftRight(i: number, j: number, array: boolean[][]): boolean[] {
  * @param sand
  */
 function canMove(i: number, j: number, walls: boolean[][], sand: boolean[][]): boolean {
-	const neighborWalls = getNeighbors(i, j, walls)
-	const neighborSand = getNeighbors(i, j, sand)
-	const neighbors: boolean[] = []
-
-	for (let i = 0; i < neighborWalls.length; i++) {
-		neighbors.push(neighborWalls[i] || neighborSand[i])
-	}
-	const diagonalCanMove = neighbors.findIndex((d) => d === false) >= 0
-	if (!diagonalCanMove) return false
-	if (!neighborWalls[0] && !neighborSand[0]) return true
-
-	const leftRightWalls = getLeftRight(i, j, walls)
-	const leftRightSand = getLeftRight(i, j, sand)
-	return (
-		!(neighborWalls[1] || neighborSand[1] || leftRightWalls[0] || leftRightSand[0]) ||
-		!(neighborWalls[0] || neighborSand[0] || leftRightWalls[1] || leftRightSand[1])
+	const neighborsSand = getNeighbors(i, j, sand)
+	const neighborsWalls = getNeighbors(i, j, walls)
+	const neighbors = arrayOr(neighborsSand, neighborsWalls)
+	return !(
+		(neighbors[0] && neighbors[2] && neighbors[4]) ||
+		(neighbors[1] && neighbors[2] && neighbors[3])
 	)
 }
 
