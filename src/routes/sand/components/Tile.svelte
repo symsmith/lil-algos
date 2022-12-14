@@ -25,7 +25,7 @@
 	name={id}
 	{disabled}
 	{id}
-	class="h-5 w-5 appearance-none bg-gray-200 checked:bg-gray-700"
+	class="h-5 w-5 appearance-none rounded-none bg-gray-200 checked:bg-gray-700"
 	class:cursor-pointer={!disabled && !isSand}
 	class:bg-yellow-600={isSand}
 />
