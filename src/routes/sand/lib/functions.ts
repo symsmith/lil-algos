@@ -24,6 +24,11 @@ function getNeighbors(i: number, j: number, array: boolean[][]): boolean[] {
 	]
 }
 
+/**
+ * Returns an array containing array1[i] || array2[i]
+ * @param array1
+ * @param array2
+ */
 function arrayOr(array1: boolean[], array2: boolean[]): boolean[] {
 	const or = []
 	for (let i = 0; i < array1.length; i++) {
@@ -43,30 +48,33 @@ function canMove(i: number, j: number, walls: boolean[][], sand: boolean[][]): b
 	const neighborsSand = getNeighbors(i, j, sand)
 	const neighborsWalls = getNeighbors(i, j, walls)
 	const neighbors = arrayOr(neighborsSand, neighborsWalls)
-	return !(
-		(neighbors[0] && neighbors[2] && neighbors[4]) ||
-		(neighbors[1] && neighbors[2] && neighbors[3])
-	)
+	return !((neighbors[0] || neighbors[1]) && neighbors[2] && (neighbors[3] || neighbors[4]))
 }
 
+/**
+ * Returns the next coordinate of the current sand item, when applying the movement decisions
+ * @param coordinate Current coordinate of a sand item
+ * @param walls
+ * @param sand
+ */
 function getNextCoordinate(
 	coordinate: Coordinate,
 	walls: boolean[][],
 	sand: boolean[][]
 ): Coordinate {
 	const [i, j] = coordinate
+	const neighborsSand = getNeighbors(i, j, sand)
+	const neighborsWalls = getNeighbors(i, j, walls)
+	const [l, bl, b, br, r] = arrayOr(neighborsSand, neighborsWalls)
+
 	// check below
-	if (!walls[i + 1][j] && !sand[i + 1][j]) {
-		return [i + 1, j]
-	}
+	if (!b) return [i + 1, j]
+
 	// check diagonal left
-	if (!walls[i + 1][j - 1] && !sand[i + 1][j - 1] && !walls[i][j - 1] && !sand[i][j - 1]) {
-		return [i + 1, j - 1]
-	}
+	if (!l && !bl) return [i + 1, j - 1]
+
 	// check diagonal right
-	if (!walls[i + 1][j + 1] && !sand[i + 1][j + 1] && !walls[i][j + 1] && !sand[i][j + 1]) {
-		return [i + 1, j + 1]
-	}
+	if (!r && !br) return [i + 1, j + 1]
 
 	return [i, j]
 }
