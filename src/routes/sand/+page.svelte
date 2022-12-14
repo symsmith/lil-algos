@@ -32,6 +32,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>sand - lil algos</title>
+</svelte:head>
+
 <main class="flex flex-col items-center gap-2 py-10">
 	<div class="board flex flex-col">
 		<div class="flex">
@@ -67,4 +71,7 @@
 	</div>
 	<Slider name="drop" min={0} max={width - 1} bind:value={drop} />
 	<Slider name="speed" max={60} bind:value={speed} />
+	<p class="mt-10">
+		inspired by <a href="https://adventofcode.com/2022/day/14" target="_BLANK">aoc/14</a>
+	</p>
 </main>
